@@ -18,16 +18,17 @@ st.markdown("""
 
 # Create input fields for all features
 gender = st.selectbox('Gender', ['Male', 'Female', 'Other'])
-age = st.number_input('Age', min_value=0)
-hypertension = st.selectbox('Hypertension', [0, 1])  # Assuming 0 = No, 1 = Yes
-heart_disease = st.selectbox('Heart Disease', [0, 1])  # Assuming 0 = No, 1 = Yes
+age = st.number_input('Age', min_value=0, help="Enter your age in years.")
+hypertension = st.selectbox('Hypertension', [0, 1], format_func=lambda x: 'No' if x == 0 else 'Yes', help="Select 'Yes' if you have hypertension, otherwise select 'No'.")  # Assuming 0 = No, 1 = Yes
+heart_disease = st.selectbox('Heart Disease', [0, 1], format_func=lambda x: 'No' if x == 0 else 'Yes', help="Select 'Yes' if you have any heart disease, otherwise select 'No'.")  # Assuming 0 = No, 1 = Yes
 ever_married = st.selectbox('Ever Married', ['No', 'Yes'])
 work_type = st.selectbox('Work Type', ['Private', 'Self-employed', 'Govt_job', 'children', 'Never_worked'])
 residence_type = st.selectbox('Residence Type', ['Urban', 'Rural'])
-avg_glucose_level = st.number_input('Average Glucose Level', min_value=0.0)
-bmi = st.number_input('BMI', min_value=0.0)
+avg_glucose_level = st.number_input('Average Glucose Level', min_value=0.0, value=90.0, help="Enter your average glucose level in mg/dL. If you don't have diabetes or you don't know your glucose level, enter 90 as a normal glucose level.")
+bmi = st.number_input('BMI', min_value=0.0, help="Enter your Body Mass Index (BMI).")
 smoking_status = st.selectbox('Smoking Status', ['never smoked', 'Unknown', 'formerly smoked', 'smokes'])
-missing_bmi = st.selectbox('Missing BMI', [0, 1])  # Assuming 0 = No, 1 = Yes
+# Set default value for missing_bmi as 0 and remove the data entry
+missing_bmi = 0
 
 # Mapping categorical inputs to numerical format
 gender = {'Male': 1, 'Female': 0, 'Other': 0}[gender]
@@ -58,4 +59,3 @@ if st.button('Predict'):
         st.success('You are not likely at risk of stroke. However, always consult a healthcare professional for health-related advice.')
     else:
         st.error('You are at risk of stroke. Please consult a healthcare professional immediately.')
-
