@@ -9,53 +9,58 @@ model_logistic_regression = joblib.load('model_logistic.pkl')
 scaler = joblib.load('scaler_filename.joblib')
 
 # Streamlit application for user input
-st.title('Stroke Prediction Assistant')
+st.title('Stroke Risk Prediction Tool')
 
 st.markdown("""
-    This application helps in predicting the likelihood of a stroke.
-    Please input the required fields and press predict to see the results.
+This tool predicts the likelihood of having a stroke based on personal health information.
+Please fill in the details below and click "Predict" to see your risk assessment.
 """)
 
-# Create input fields for all features
+# User inputs
 gender = st.selectbox('Gender', ['Male', 'Female', 'Other'])
-age = st.number_input('Age', min_value=0, help="Enter your age in years.")
-hypertension = st.selectbox('Hypertension', [0, 1], format_func=lambda x: 'No' if x == 0 else 'Yes', help="Select 'Yes' if you have hypertension, otherwise select 'No'.")  # Assuming 0 = No, 1 = Yes
-heart_disease = st.selectbox('Heart Disease', [0, 1], format_func=lambda x: 'No' if x == 0 else 'Yes', help="Select 'Yes' if you have any heart disease, otherwise select 'No'.")  # Assuming 0 = No, 1 = Yes
+age = st.number_input('Age', min_value=0)
+hypertension = st.selectbox('Hypertension', [0, 1])
+heart_disease = st.selectbox('Heart Disease', [0, 1])
 ever_married = st.selectbox('Ever Married', ['No', 'Yes'])
 work_type = st.selectbox('Work Type', ['Private', 'Self-employed', 'Govt_job', 'children', 'Never_worked'])
 residence_type = st.selectbox('Residence Type', ['Urban', 'Rural'])
-avg_glucose_level = st.number_input('Average Glucose Level', min_value=0.0, value=90.0, help="Enter your average glucose level in mg/dL. If you don't have diabetes or you don't know your glucose level, enter 90 as a normal glucose level.")
-bmi = st.number_input('BMI', min_value=0.0, help="Enter your Body Mass Index (BMI).")
-smoking_status = st.selectbox('Smoking Status', ['never smoked', 'Unknown', 'formerly smoked', 'smokes'])
-# Set default value for missing_bmi as 0 and remove the data entry
-missing_bmi = 0
+avg_glucose_level = st.number_input('Average Glucose Level', min_value=0.0, value=90.0)
+height = st.number_input('Height (in cm)', min_value=0.0)
+weight = st.number_input('Weight (in kg)', min_value=0.0)
+smoking_status = st.selectbox('Smoking Status', ['never smoked', 'Sometimes', 'formerly smoked', 'smokes'])
 
-# Mapping categorical inputs to numerical format
-gender = {'Male': 1, 'Female': 0, 'Other': 0}[gender]
-residence_type = {'Urban': 1, 'Rural': 0}[residence_type]
-work_type = {'Private': 1, 'Self-employed': 2, 'children': 3, 'Govt_job': 4, 'Never_worked': 3}[work_type]
-ever_married = {'Yes': 1, 'No': 0}[ever_married]
-smoking_status = {'never smoked': 3, 'Unknown': 4, 'formerly smoked': 1, 'smokes': 2}[smoking_status]
+# Calculate BMI
+bmi = weight / ((height / 100) ** 2) if height > 0 and weight > 0 else 0
 
-# Prepare the input data as a DataFrame
-input_data = pd.DataFrame([[gender, age, hypertension, heart_disease, ever_married, 
-                            work_type, residence_type, avg_glucose_level, bmi, 
-                            smoking_status, missing_bmi]])
+# Encode the inputs
+features = {
+    'gender': {'Male': 1, 'Female': 0, 'Other': 2}[gender],
+    'age': age,
+    'hypertension': hypertension,
+    'heart_disease': heart_disease,
+    'ever_married': {'Yes': 1, 'No': 0}[ever_married],
+    'work_type': {'Private': 1, 'Self-employed': 2, 'Govt_job': 3, 'children': 4, 'Never_worked': 5}[work_type],
+    'Residence_type': {'Urban': 1, 'Rural': 0}[residence_type],
+    'avg_glucose_level': avg_glucose_level,
+    'bmi': bmi,
+    'smoking_status': {'never smoked': 1, 'Sometimes': 2, 'formerly smoked': 3, 'smokes': 4}[smoking_status],
+    'missing_bmi': 0  # Including for model compatibility, but not displaying to the user
+}
 
-# Scale the input data using the loaded scaler
-scaled_input_data = scaler.transform(input_data)
+# Convert features to DataFrame
+input_df = pd.DataFrame([features])
 
-# Select model
+# Scale the input data
+scaled_input = scaler.transform(input_df)
+
+# Model prediction
 model_option = st.selectbox('Select Model', ['Decision Tree', 'Logistic Regression'])
-
 if st.button('Predict'):
-    if model_option == 'Decision Tree':
-        prediction = model_decision_tree.predict(scaled_input_data)
-    elif model_option == 'Logistic Regression':
-        prediction = model_logistic_regression.predict(scaled_input_data)
+    prediction = model_decision_tree.predict(scaled_input) if model_option == 'Decision Tree' else model_logistic_regression.predict(scaled_input)
 
-    # User-friendly message based on prediction
+    # Creative display of the calculated BMI and prediction result
+    st.markdown(f"#### Your Calculated BMI: {bmi:.2f}")
     if prediction == 0:
-        st.success('You are not likely at risk of stroke. However, always consult a healthcare professional for health-related advice.')
+        st.success('🎉 **Congratulations! You are not likely at risk of stroke.** Nonetheless, maintaining a healthy lifestyle is key. Always consult a healthcare professional for personalized advice.')
     else:
-        st.error('You are at risk of stroke. Please consult a healthcare professional immediately.')
+        st.error('⚠️ **Alert! You may be at risk of stroke.** It’s crucial to consult a healthcare professional for a comprehensive evaluation and advice.')
