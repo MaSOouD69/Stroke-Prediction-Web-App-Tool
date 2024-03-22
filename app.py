@@ -24,7 +24,7 @@ heart_disease = st.selectbox('Heart Disease', ['No', 'Yes'])
 ever_married = st.selectbox('Ever Married', ['No', 'Yes'])
 work_type = st.selectbox('Work Type', ['Private', 'Self-employed', 'Government Job', 'Children', 'Never Worked'])
 residence_type = st.selectbox('Residence Type', ['Urban', 'Rural'])
-avg_glucose_level = st.number_input('Average Glucose Level (mg/dL)', min_value=0)
+avg_glucose_level = st.number_input('Average Glucose Level (mg/dL)', min_value=0, value=90)
 smoking_status = st.selectbox('Smoking Status', ['never smoked', 'Sometimes', 'formerly smoked', 'smokes'])
 
 unit_system = st.selectbox('Choose Unit System', ['Metric (cm, kg)', 'Imperial (inches, pounds)'])
@@ -37,7 +37,8 @@ elif unit_system == 'Imperial (inches, pounds)':
     weight = st.number_input('Weight (pounds)', min_value=0, step=1)
 
 if not any([hypertension, heart_disease, ever_married]):
-    avg_glucose_level = st.number_input('Average Glucose Level (mg/dL)', min_value=0, value=90)
+    avg_glucose_level = st.number_input('Average Glucose Level (mg/dL)', min_value=0, value=90,
+                                        help='Default value is set to 90 for individuals without diabetes.')
 
 # Convert height and weight to cm and kg if entered in imperial units
 if unit_system == 'Imperial (inches, pounds)':
