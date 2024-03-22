@@ -22,11 +22,11 @@ age = st.number_input('Age', min_value=0)
 hypertension = st.selectbox('Do you have Hypertension?', ['No', 'Yes'])
 heart_disease = st.selectbox('Do you have Heart Disease?', ['No', 'Yes'])
 ever_married = st.selectbox('Have you ever been Married?', ['No', 'Yes'])
-work_type = st.selectbox('Work Type', ['Private', 'Self-employed', 'Govt_job', 'Children', 'Never worked'])
+work_type = st.selectbox('Employment Status', ['Private sector', 'Self-employed', 'Government employee', 'Unemployed', 'Student'])
 residence_type = st.selectbox('Residence Type', ['Urban', 'Rural'])
-avg_glucose_level = st.number_input('Average Glucose Level', min_value=0.0, value=90.0)
-height = st.number_input('Height (in cm)', min_value=0.0)
-weight = st.number_input('Weight (in kg)', min_value=0.0)
+avg_glucose_level = st.number_input('Average Glucose Level (mg/dL)', min_value=0.0, value=90.0, help="Leave as default if you don't have Diabetes")
+height = st.number_input('Height (in cm)', min_value=0, step=1)
+weight = st.number_input('Weight (in kg)', min_value=0, step=1)
 smoking_status = st.selectbox('Smoking Status', ['Never smoked', 'Sometimes', 'Formerly smoked', 'Smokes'])
 
 # Calculate BMI
@@ -39,7 +39,7 @@ features = {
     'hypertension': {'Yes': 1, 'No': 0}[hypertension],
     'heart_disease': {'Yes': 1, 'No': 0}[heart_disease],
     'ever_married': {'Yes': 1, 'No': 0}[ever_married],
-    'work_type': {'Private': 1, 'Self-employed': 2, 'Govt_job': 3, 'Children': 4, 'Never worked': 5}[work_type],
+    'work_type': {'Private sector': 1, 'Self-employed': 2, 'Government employee': 3, 'Unemployed': 4, 'Student': 5}[work_type],
     'Residence_type': {'Urban': 1, 'Rural': 0}[residence_type],
     'avg_glucose_level': avg_glucose_level,
     'bmi': bmi,
