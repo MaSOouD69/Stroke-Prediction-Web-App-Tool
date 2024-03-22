@@ -27,19 +27,21 @@ residence_type = st.selectbox('Residence Type', ['Urban', 'Rural'])
 avg_glucose_level = st.number_input('Average Glucose Level (mg/dL)', min_value=0)
 smoking_status = st.selectbox('Smoking Status', ['never smoked', 'Sometimes', 'formerly smoked', 'smokes'])
 
-height_unit = st.selectbox('Height Unit', ['cm', 'inches'])
-height = st.number_input('Height', min_value=0, step=1 if height_unit == 'cm' else 0.01)
+unit_system = st.selectbox('Choose Unit System', ['Metric (cm, kg)', 'Imperial (inches, pounds)'])
 
-weight_unit = st.selectbox('Weight Unit', ['kg', 'pounds'])
-weight = st.number_input('Weight', min_value=0, step=1 if weight_unit == 'kg' else 0.01)
+if unit_system == 'Metric (cm, kg)':
+    height = st.number_input('Height (cm)', min_value=0, step=1)
+    weight = st.number_input('Weight (kg)', min_value=0, step=1)
+elif unit_system == 'Imperial (inches, pounds)':
+    height = st.number_input('Height (inches)', min_value=0, step=1)
+    weight = st.number_input('Weight (pounds)', min_value=0, step=1)
 
 if not any([hypertension, heart_disease, ever_married]):
     avg_glucose_level = st.number_input('Average Glucose Level (mg/dL)', min_value=0, value=90)
 
 # Convert height and weight to cm and kg if entered in imperial units
-if height_unit == 'inches':
+if unit_system == 'Imperial (inches, pounds)':
     height = height * 2.54  # Convert inches to cm
-if weight_unit == 'pounds':
     weight = weight * 0.453592  # Convert pounds to kg
 
 # Calculate BMI
