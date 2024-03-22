@@ -8,6 +8,12 @@ model_decision_tree = joblib.load('model_filename.pkl')
 model_logistic_regression = joblib.load('model_logistic.pkl')
 scaler = joblib.load('scaler_filename.joblib')
 
+# Function to convert height and weight from imperial to metric units
+def convert_to_metric(height_ft, height_in, weight_lb):
+    height_cm = (height_ft * 12 + height_in) * 2.54
+    weight_kg = weight_lb * 0.453592
+    return height_cm, weight_kg
+
 # Streamlit application for user input
 st.title('Stroke Risk Prediction Tool')
 
@@ -24,10 +30,19 @@ heart_disease = st.selectbox('Do you have Heart Disease?', ['No', 'Yes'])
 ever_married = st.selectbox('Have you ever been Married?', ['No', 'Yes'])
 work_type = st.selectbox('Employment Status', ['Private sector', 'Self-employed', 'Government employee', 'Unemployed', 'Student'])
 residence_type = st.selectbox('Residence Type', ['Urban', 'Rural'])
-avg_glucose_level = st.number_input('Average Glucose Level (mg/dL)', min_value=0.0, value=90.0, help="Leave as default if you don't have Diabetes")
-height = st.number_input('Height (in cm)', min_value=0, step=1)
-weight = st.number_input('Weight (in kg)', min_value=0, step=1)
+avg_glucose_level = st.number_input('Average Glucose Level', min_value=0.0, value=90.0)
 smoking_status = st.selectbox('Smoking Status', ['Never smoked', 'Sometimes', 'Formerly smoked', 'Smokes'])
+
+# Option to choose metric or imperial units for height and weight
+unit_system = st.selectbox('Choose unit system for Height and Weight', ['Metric', 'Imperial'])
+if unit_system == 'Metric':
+    height = st.number_input('Height (in cm)', min_value=0, step=1)
+    weight = st.number_input('Weight (in kg)', min_value=0, step=1)
+else:  # If imperial units selected, provide separate fields for feet and inches for height, and pounds for weight
+    height_ft = st.number_input('Height (Feet)', min_value=0, step=1)
+    height_in = st.number_input('Height (Inches)', min_value=0, max_value=11, step=1)
+    weight_lb = st.number_input('Weight (in pounds)', min_value=0, step=1)
+    height, weight = convert_to_metric(height_ft, height_in, weight_lb)
 
 # Calculate BMI
 bmi = weight / ((height / 100) ** 2) if height > 0 and weight > 0 else 0
